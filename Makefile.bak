@@ -1,22 +1,26 @@
-# Makefile for ODZIP
+# Makefile for ODMSG
 
 CC      := gcc
 CFLAGS  := -std=c17 -O2 -Wall -Wextra -pedantic -march=native -flto
 LDFLAGS := -flto
-TARGET  := odz
+TARGET  := odmsg
 SRC     := main.c
 
-.PHONY: all clean run
+.PHONY: all clean test
 
 all: $(TARGET)
 
 $(TARGET): $(SRC)
 	$(CC) $(CFLAGS) -o $@ $^ $(LDFLAGS) compress.c decompress.c lz_hashchain.c odz_util.c
 
-run: $(TARGET)
-	./$(TARGET) c LICENSE output.odz
-	./$(TARGET) d output.odz roundtrip
-	cmp LICENSE roundtrip
+test: $(TARGET)
+	echo 'Hello World' > original
+	echo 'ODZ!@!+!!!!!!!!%(&^&-&-&}#!^*&}!!*#&-&%' > odmsgd
+	./$(TARGET) c Hello World > encoded
+	./$(TARGET) d 'ODZ!@!+!!!!!!!!%(&^&-&-&}#!^*&}!!*#&-&%' > decoded
+	cmp original decoded
+	cmp odmsgd encoded
+	$(RM) original odmsgd encoded decoded
 
 clean:
-	$(RM) $(TARGET) *.o output.odz roundtrip
+	$(RM) $(TARGET) *.o

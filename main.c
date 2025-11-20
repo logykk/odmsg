@@ -9,6 +9,7 @@
 #include <stdio.h>
 #include <stdint.h>
 #include <stdlib.h>
+#include <string.h>
 #include <assert.h>
 
 #include "odz.h"
@@ -17,43 +18,74 @@
 enum { HASH_BITS = 15, HASH_SIZE = 1 << HASH_BITS };
 
 
-static uint8_t *read_entire(const char *path, size_t *n_out) {
-    FILE *f = fopen(path, "rb"); if (!f) die("open input");
-    if (fseek(f, 0, SEEK_END)) die("seek end");
-    long n = ftell(f); if (n < 0) die("ftell");
-    if (fseek(f, 0, SEEK_SET)) die("seek set");
-    uint8_t *buf = malloc((size_t)n); if (!buf) die("oom");
-    size_t got = fread(buf, 1, (size_t)n, f);
-    if (got != (size_t)n) die("short read");
-    fclose(f);
-    *n_out = got; return buf;
-}
 
-static void write_all(const char *path, const uint8_t *buf, size_t n) {
-    FILE *f = fopen(path, "wb"); if (!f) die("open output");
-    if (fwrite(buf, 1, n, f) != n) die("short write");
-    fclose(f);
-}
+char* join_argv(char *argv[], int start, int total) {
+    // If string wrapped in quotes
+    if (total == 1) {
+        char *str = argv[start];
+        size_t len = strlen(str);
 
+        if (((str[0] == '"' && str[len-1] == '"') || (str[0] == '\'' && str[len-1] == '\''))) {
+            // Allocate new string without first and last character
+            char* stripped = malloc(len - 1);
+            if (!stripped) return NULL;
+
+            // Copy middle part, excluding first and last character
+            strncpy(stripped, str + 1, len - 2);
+            stripped[len - 2] = '\0';
+            
+            return stripped;
+        } else {
+            return str;
+        }
+    }
+
+    // Calculate total length
+    size_t total_length = 0;
+    for (int i = 0; i < total; i++) {
+        total_length += strlen(argv[i]) + 1;  // +1 for space or null terminator
+    }
+
+    // Allocate memory
+    char* result = malloc(total_length);
+    if (!result) return NULL;
+
+    // First argument
+    strcpy(result, argv[start]);
+
+    // Concatenate remaining arguments
+    for (int i = start + 1; i < total; i++) {
+        strcat(result, " ");
+        strcat(result, argv[i]);
+    }
+
+    return result;
+}
 
 int main(int argc, char **argv) {
-    if (argc != 4) {
-        fprintf(stderr, "usage:\n  %s c <in> <out>\n  %s d <in> <out>\n", argv[0], argv[0]);
+    if (argc < 3) {
+        fprintf(stderr, "usage:\n  %s c <in>\n  %s d <in>\n", argv[0], argv[0]);
         return 2;
     }
+
     char mode = argv[1][0];
-    size_t nin; uint8_t *bin = read_entire(argv[2], &nin);
+    char *in = join_argv(argv, 2, argc);
+    size_t lin = strlen(in);
     uint8_t *bout = NULL; size_t nout = 0;
+    char *msg;
 
     if (mode == 'c') {
-        compress_simple(bin, nin, &bout, &nout);
+        compress_simple((uint8_t *)in, lin, &bout, &nout);
+        msg = encode((char *)bout, nout);
+        puts(msg);
     } else if (mode == 'd') {
-        decompress_simple(bin, nin, &bout, &nout);
+        msg = decode(in, strlen(in));
+        decompress_simple((uint8_t *)msg, lin, &bout, &nout);
+        puts((char *)bout);
     } else {
         die("mode must be c or d");
     }
 
-    write_all(argv[3], bout, nout);
-    free(bin); free(bout);
+    free(msg); free(bout);
     return 0;
 }

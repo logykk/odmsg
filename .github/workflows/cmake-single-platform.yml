@@ -40,5 +40,5 @@ jobs:
     - name: Upload build artifact
       uses: actions/upload-artifact@v4
       with:
-        name: odz-linux
-        path: build/odz
+        name: odmsg-linux
+        path: build/odmsg

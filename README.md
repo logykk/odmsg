@@ -1,7 +1,5 @@
-# ODZip Alpha
-Minimal file compression. 
-
-Archives & encryption coming soon.
+# ODMSG Alpha
+Message encoded/decoder using ODZip. 
 
 
 ## Building
@@ -24,13 +22,11 @@ make
 
 ### Option 3; build directly with gcc/clang:
 ```sh
-gcc -std=c17 -O2 -Wall -Wextra -o odz main.c compress.c decompress.c lz_hashchain.c odz_util.c
+gcc -std=c17 -O2 -Wall -Wextra -o odmsg main.c compress.c decompress.c lz_hashchain.c odz_util.c
 ```
 
 
 ## Disclaimer
-This project is in early alpha, 
-- it WILL not be afraid to overwrite a file if given an output that already exists
-- it currently doesn't preserve file permissions/inode data.
+This project is in early alpha
 
 PRs/issues are welcome.

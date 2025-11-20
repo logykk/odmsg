@@ -8,16 +8,11 @@
 /compile_commands.json
 
 # ---- Binaries ----
-/odz
-/odz.exe
+/odmsg
+/odmsg.exe
 /*.o
 /*.obj
 /*.pdb
-
-# ---- Test artifacts ----
-/input
-/output.odz
-/roundtrip
 
 # ---- IDE / Editor ----
 # CLion / IntelliJ

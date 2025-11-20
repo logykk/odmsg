@@ -14,5 +14,8 @@ uint32_t rd_u32le(const uint8_t *src);
 void compress_simple(const uint8_t *in, size_t n, uint8_t **outp, size_t *outn);
 void decompress_simple(const uint8_t *in, size_t n, uint8_t **outp, size_t *outn);
 
+char* encode(const char* input, size_t input_len);
+char* decode(const char* encoded, size_t encoded_len);
+
 
 #endif

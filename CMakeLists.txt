@@ -1,20 +1,20 @@
 cmake_minimum_required(VERSION 3.16)
-project(odzip C)
+project(odmsg C)
 
 set(CMAKE_C_STANDARD 17)
 set(CMAKE_C_STANDARD_REQUIRED ON)
 
-add_executable(odz main.c
+add_executable(odmsg main.c
         odz_util.c
         lz_hashchain.c
         compress.c
         decompress.c)
 
 if (MSVC)
-    target_compile_options(odz PRIVATE /O2 /W4)
+    target_compile_options(odmsg PRIVATE /O2 /W4)
 else()
-    target_compile_options(odz PRIVATE -O2 -Wall -Wextra -pedantic -march=native -flto)
-    target_link_options(odz PRIVATE -flto)
+    target_compile_options(odmsg PRIVATE -O2 -Wall -Wextra -pedantic -march=native -flto)
+    target_link_options(odmsg PRIVATE -flto)
 endif()
 
 
@@ -37,7 +37,7 @@ add_custom_target(run
         COMMAND $<TARGET_FILE:odz> c input output.odz
         COMMAND $<TARGET_FILE:odz> d output.odz roundtrip
         COMMAND ${CMAKE_COMMAND} -E compare_files input roundtrip
-        DEPENDS odz
+        DEPENDS odmsg
         WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
         COMMENT "Compress → Decompress → Compare (input vs roundtrip)"
 )
@@ -48,4 +48,4 @@ add_custom_target(tidy
         COMMENT "Remove generated output files"
 )
 
-install(TARGETS odz RUNTIME DESTINATION bin)
+install(TARGETS odmsg RUNTIME DESTINATION bin)
