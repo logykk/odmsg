@@ -1,6 +1,5 @@
 # ODMSG Alpha
-Message encoded/decoder using ODZip. 
-
+Message encoded/decoder using [ODZip](https://github.com/odpay/odzip).
 
 ## Building
 clone the git project and you can build using either cmake, make, gcc/clang.
@@ -28,5 +27,3 @@ gcc -std=c17 -O2 -Wall -Wextra -o odmsg main.c compress.c decompress.c lz_hashch
 
 ## Disclaimer
 This project is in early alpha
-
-PRs/issues are welcome.
