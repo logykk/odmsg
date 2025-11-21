@@ -17,33 +17,20 @@ else()
     target_link_options(odmsg PRIVATE -flto)
 endif()
 
-
-# roundtrip compress -> decompress license test
-set(LICENSE_FILE ${CMAKE_SOURCE_DIR}/LICENSE)
-if (EXISTS ${LICENSE_FILE})
-    configure_file(${LICENSE_FILE}
-            ${CMAKE_CURRENT_BINARY_DIR}/input
-            COPYONLY)
-else()
-    file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/input
-            "testingabcabcabc123
-
-hi
-123")
-endif()
-
 add_custom_target(run
-        COMMAND
-        COMMAND $<TARGET_FILE:odz> c input output.odz
-        COMMAND $<TARGET_FILE:odz> d output.odz roundtrip
-        COMMAND ${CMAKE_COMMAND} -E compare_files input roundtrip
+        COMMAND echo "Hello World" > original
+        COMMAND echo "ODZ!@!+!!!!!!!!%(&^&-&-&}#!^*&}!!*#&-&%" > odmsgd
+        COMMAND $<TARGET_FILE:odmsg> c Hello World > encoded
+        COMMAND $<TARGET_FILE:odmsg> d "ODZ!@!+!!!!!!!!%(&^&-&-&}#!^*&}!!*#&-&%" > decoded
+        COMMAND ${CMAKE_COMMAND} -E compare_files original decoded
+        COMMAND ${CMAKE_COMMAND} -E compare_files odmsgd encoded
         DEPENDS odmsg
         WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
-        COMMENT "Compress → Decompress → Compare (input vs roundtrip)"
+        COMMENT "Encode/Decode compare (Hello world)"
 )
 
 add_custom_target(tidy
-        COMMAND ${CMAKE_COMMAND} -E rm -f output.odz roundtrip
+        COMMAND ${CMAKE_COMMAND} -E rm -f original odmsgd encoded decoded
         WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
         COMMENT "Remove generated output files"
 )
